@@ -1,0 +1,51 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a SoftwareWarehouse API server.",
+        "title": "SoftwareWarehouse Web API",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.swagger.io/support",
+            "email": "support@swagger.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "paths": {
+        "/search/ping": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Search"
+                ],
+                "summary": "Print",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/search.PingCodeSimResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "search.PingCodeSimResponse": {
+            "type": "object",
+            "properties": {
+                "full_text": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
