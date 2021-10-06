@@ -1,11 +1,11 @@
-package format
+package api_format
 
 import "net/http"
 
 type JSONRespFormat struct {
-	Status int `json:"status"`
-	Message string `json:"message"`
-	Data interface{} `json:"data"`
+	Status  int         `json:"status"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
 }
 
 func SimpleOKResp(data interface{}) *JSONRespFormat {

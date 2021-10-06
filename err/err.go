@@ -1,6 +1,9 @@
 package err
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 var (
 	InternalErr = &APIErr{
@@ -33,6 +36,14 @@ func (A *APIErr) Error() string {
 func (A *APIErr) CustomMessage(message string) *APIErr {
 	return &APIErr{
 		Message: message,
+		Status:  A.Status,
+		Stable:  A.Stable,
+	}
+}
+
+func (A *APIErr) CustomMessageF(msg string, formatter ...interface{}) *APIErr {
+	return &APIErr{
+		Message: fmt.Sprintf(msg, formatter...),
 		Status:  A.Status,
 		Stable:  A.Stable,
 	}

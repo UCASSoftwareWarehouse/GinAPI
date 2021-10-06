@@ -7,7 +7,9 @@ import (
 )
 
 func initCodeSimCli() pb_gen.CodeSimClient {
-	conn, err := grpc.Dial(config.Conf.CodeSimServiceAddr, grpc.WithInsecure())
+	var dialOpt []grpc.DialOption
+	dialOpt = append(dialOpt, grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(5*1024*1024*1024*1024), grpc.MaxCallSendMsgSize(5*1024*1024*1024*1024)), grpc.WithInsecure())
+	conn, err := grpc.Dial(config.Conf.CodeSimServiceAddr, dialOpt...)
 	if err != nil {
 		panic(err)
 	}

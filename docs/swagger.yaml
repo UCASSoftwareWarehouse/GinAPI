@@ -1,8 +1,21 @@
 definitions:
+  model.LocalUploadSourceCodeResponse:
+    type: object
   search.PingCodeSimResponse:
     properties:
       full_text:
         type: string
+    type: object
+  search.QueryCodeRequest:
+    properties:
+      code_type:
+        type: integer
+      content:
+        type: string
+      from:
+        type: integer
+      size:
+        type: integer
     type: object
 info:
   contact:
@@ -16,6 +29,40 @@ info:
   title: SoftwareWarehouse Web API
   version: "1.0"
 paths:
+  /access/local/upload/source_code:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: file
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: projectName
+        in: formData
+        name: projectName
+        required: true
+        type: string
+      - description: tag
+        in: formData
+        name: tag
+        required: true
+        type: string
+      - description: fileType
+        in: formData
+        name: fileType
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.LocalUploadSourceCodeResponse'
+      tags:
+      - local
   /search/ping:
     get:
       consumes:
@@ -28,6 +75,27 @@ paths:
           schema:
             $ref: '#/definitions/search.PingCodeSimResponse'
       summary: Print
+      tags:
+      - Search
+  /search/query:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: query code
+        in: body
+        name: queryCodeRequest
+        required: true
+        schema:
+          $ref: '#/definitions/search.QueryCodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/search.PingCodeSimResponse'
+      summary: 模糊查询代码
       tags:
       - Search
 swagger: "2.0"

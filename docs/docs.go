@@ -31,6 +31,57 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/access/local/upload/source_code": {
+            "post": {
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "local"
+                ],
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "projectName",
+                        "name": "projectName",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "tag",
+                        "name": "tag",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "fileType",
+                        "name": "fileType",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.LocalUploadSourceCodeResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/search/ping": {
             "get": {
                 "consumes": [
@@ -52,14 +103,67 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/search/query": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Search"
+                ],
+                "summary": "模糊查询代码",
+                "parameters": [
+                    {
+                        "description": "query code",
+                        "name": "queryCodeRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/search.QueryCodeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/search.PingCodeSimResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "model.LocalUploadSourceCodeResponse": {
+            "type": "object"
+        },
         "search.PingCodeSimResponse": {
             "type": "object",
             "properties": {
                 "full_text": {
                     "type": "string"
+                }
+            }
+        },
+        "search.QueryCodeRequest": {
+            "type": "object",
+            "properties": {
+                "code_type": {
+                    "type": "integer"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "from": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
                 }
             }
         }

@@ -1,4 +1,4 @@
-package swagger
+package swagger_api
 
 import (
 	"github.com/gin-gonic/gin"

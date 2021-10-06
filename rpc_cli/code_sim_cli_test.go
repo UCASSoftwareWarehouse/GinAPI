@@ -23,7 +23,7 @@ func Test1(t *testing.T) {
 	defer conn.Close()
 	cli := pb_gen.NewCodeSimClient(conn)
 	res, err := cli.HelloWorld(context.Background(), &pb_gen.CodeSimHelloWorldRequest{
-		HelloText:     "Hello!!!",
+		HelloText: "Hello!!!",
 	})
 	t.Logf("res=[%v], err=[%v]", res, err)
 }

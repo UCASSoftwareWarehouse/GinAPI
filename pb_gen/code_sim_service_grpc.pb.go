@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type CodeSimClient interface {
 	HelloWorld(ctx context.Context, in *CodeSimHelloWorldRequest, opts ...grpc.CallOption) (*CodeSimHelloWorldResponse, error)
 	Search(ctx context.Context, in *CodeSimSearchRequest, opts ...grpc.CallOption) (*CodeSimSearchResponse, error)
+	Upload(ctx context.Context, opts ...grpc.CallOption) (CodeSim_UploadClient, error)
 }
 
 type codeSimClient struct {
@@ -48,12 +49,47 @@ func (c *codeSimClient) Search(ctx context.Context, in *CodeSimSearchRequest, op
 	return out, nil
 }
 
+func (c *codeSimClient) Upload(ctx context.Context, opts ...grpc.CallOption) (CodeSim_UploadClient, error) {
+	stream, err := c.cc.NewStream(ctx, &CodeSim_ServiceDesc.Streams[0], "/pb.CodeSim/Upload", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &codeSimUploadClient{stream}
+	return x, nil
+}
+
+type CodeSim_UploadClient interface {
+	Send(*CodeSimUploadRequest) error
+	CloseAndRecv() (*CodeSimUploadResponse, error)
+	grpc.ClientStream
+}
+
+type codeSimUploadClient struct {
+	grpc.ClientStream
+}
+
+func (x *codeSimUploadClient) Send(m *CodeSimUploadRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *codeSimUploadClient) CloseAndRecv() (*CodeSimUploadResponse, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(CodeSimUploadResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // CodeSimServer is the server API for CodeSim service.
 // All implementations must embed UnimplementedCodeSimServer
 // for forward compatibility
 type CodeSimServer interface {
 	HelloWorld(context.Context, *CodeSimHelloWorldRequest) (*CodeSimHelloWorldResponse, error)
 	Search(context.Context, *CodeSimSearchRequest) (*CodeSimSearchResponse, error)
+	Upload(CodeSim_UploadServer) error
 	mustEmbedUnimplementedCodeSimServer()
 }
 
@@ -66,6 +102,9 @@ func (UnimplementedCodeSimServer) HelloWorld(context.Context, *CodeSimHelloWorld
 }
 func (UnimplementedCodeSimServer) Search(context.Context, *CodeSimSearchRequest) (*CodeSimSearchResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Search not implemented")
+}
+func (UnimplementedCodeSimServer) Upload(CodeSim_UploadServer) error {
+	return status.Errorf(codes.Unimplemented, "method Upload not implemented")
 }
 func (UnimplementedCodeSimServer) mustEmbedUnimplementedCodeSimServer() {}
 
@@ -116,6 +155,32 @@ func _CodeSim_Search_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CodeSim_Upload_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(CodeSimServer).Upload(&codeSimUploadServer{stream})
+}
+
+type CodeSim_UploadServer interface {
+	SendAndClose(*CodeSimUploadResponse) error
+	Recv() (*CodeSimUploadRequest, error)
+	grpc.ServerStream
+}
+
+type codeSimUploadServer struct {
+	grpc.ServerStream
+}
+
+func (x *codeSimUploadServer) SendAndClose(m *CodeSimUploadResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *codeSimUploadServer) Recv() (*CodeSimUploadRequest, error) {
+	m := new(CodeSimUploadRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // CodeSim_ServiceDesc is the grpc.ServiceDesc for CodeSim service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -132,6 +197,12 @@ var CodeSim_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CodeSim_Search_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "Upload",
+			Handler:       _CodeSim_Upload_Handler,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "code_sim/code_sim_service.proto",
 }

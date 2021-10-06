@@ -1,35 +1,31 @@
 package search_api
 
 import (
+	"GinAPI/api/api_format"
 	"GinAPI/err"
-	format2 "GinAPI/format"
 	"GinAPI/internal/search"
 	"github.com/gin-gonic/gin"
 )
 
-type SearchAPI struct {}
+type API struct{}
 
 const prefix = "/search"
 
 func Register(r *gin.Engine) {
-	api := SearchAPI{}
+	api := API{}
 	searchRouter := r.Group(prefix)
-	searchRouter.GET("/ping", api.wrap(api.pingCodeSim()))
+	searchRouter.GET("/ping", api_format.Wrap(api.pingCodeSim()))
+	searchRouter.POST("/query", api_format.Wrap(api.query()))
 }
 
-func (SearchAPI) wrap(handler interface{}) func(c *gin.Context) {
-	switch handler.(type) {
-	case format2.SimpleJSONHandler:
-		return format2.UnwrapSimpleJSONHandler(handler.(format2.SimpleJSONHandler))
-	case format2.NormalHandler:
-		return handler.(func(ctx *gin.Context))
-	default:
-		panic("Unsupported Search API type")
+func (API) pingCodeSim() api_format.SimpleJSONHandler {
+	return func(c *gin.Context) (*api_format.JSONRespFormat, *err.APIErr) {
+		return search.GetHandler().Ping(c)
 	}
 }
 
-func (SearchAPI) pingCodeSim() format2.SimpleJSONHandler {
-	return func(c *gin.Context) (*format2.JSONRespFormat, *err.APIErr) {
-		return search.GetHandler().Ping(c)
+func (API) query() api_format.SimpleJSONHandler {
+	return func(c *gin.Context) (*api_format.JSONRespFormat, *err.APIErr) {
+		return search.GetHandler().Query(c)
 	}
 }

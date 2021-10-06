@@ -1,4 +1,4 @@
-package format
+package api_format
 
 import (
 	"GinAPI/err"
@@ -11,9 +11,10 @@ type NormalHandler func(*gin.Context)
 
 func UnwrapSimpleJSONHandler(handler SimpleJSONHandler) func(c *gin.Context) {
 	return func(c *gin.Context) {
+		c.Set("some_key", "some_value")
 		resp, e := handler(c)
 		if e != nil {
-			c.JSON(e.Status, NewJSONResp(e.Status, e.Message, nil))
+			UnwrapErr(c, e)
 			return
 		}
 		if resp == nil {
@@ -22,4 +23,8 @@ func UnwrapSimpleJSONHandler(handler SimpleJSONHandler) func(c *gin.Context) {
 		}
 		c.JSON(resp.Status, NewJSONResp(resp.Status, resp.Message, resp.Data))
 	}
+}
+
+func UnwrapErr(c *gin.Context, e *err.APIErr) {
+	c.JSON(e.Status, NewJSONResp(e.Status, e.Message, nil))
 }
