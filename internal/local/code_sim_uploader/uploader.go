@@ -23,7 +23,6 @@ var fileTypeMapper = map[util.ArchiveFileType]pb_gen.CodeSimUploadFileType{
 }
 
 type Uploader struct {
-
 }
 
 func (Uploader) GetName() string {
@@ -110,7 +109,7 @@ func (Uploader) Process(ctx context.Context, projectName, tag string, filepath s
 	}
 
 	resStr, _ := json.Marshal(response)
-	log.Printf("UploadSourceCode success, response str is [%s]", resStr)
+	log.Printf("PatchSourceCode success, response str is [%s]", resStr)
 
 	return nil
 }

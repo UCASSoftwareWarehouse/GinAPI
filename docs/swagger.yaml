@@ -1,21 +1,30 @@
 definitions:
-  model.LocalUploadSourceCodeResponse:
+  model.LocalPatchBinaryResponse:
     type: object
-  search.PingCodeSimResponse:
+  model.LocalPatchSourceCodeResponse:
+    type: object
+  model.PingCodeSimResponse:
     properties:
       full_text:
         type: string
     type: object
-  search.QueryCodeRequest:
+  model.SearchSourceCodeResponse:
     properties:
-      code_type:
-        type: integer
+      project_files:
+        items:
+          $ref: '#/definitions/models.ProjectFile'
+        type: array
+    type: object
+  models.ProjectFile:
+    properties:
       content:
         type: string
-      from:
-        type: integer
-      size:
-        type: integer
+      project_name:
+        type: string
+      relPath:
+        type: string
+      tag:
+        type: string
     type: object
 info:
   contact:
@@ -29,8 +38,38 @@ info:
   title: SoftwareWarehouse Web API
   version: "1.0"
 paths:
-  /access/local/upload/source_code:
-    post:
+  /api/v1/binary/local:
+    patch:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: file
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: projectName
+        in: formData
+        name: projectName
+        required: true
+        type: string
+      - description: tag
+        in: formData
+        name: tag
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.LocalPatchBinaryResponse'
+      summary: 本地上传二进制包
+      tags:
+      - binary
+  /api/v1/source_code/local:
+    patch:
       consumes:
       - multipart/form-data
       parameters:
@@ -60,42 +99,55 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.LocalUploadSourceCodeResponse'
+            $ref: '#/definitions/model.LocalPatchSourceCodeResponse'
+      summary: local上传源代码
       tags:
-      - local
-  /search/ping:
+      - source_code
+  /api/v1/source_code/search:
     get:
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/search.PingCodeSimResponse'
-      summary: Print
-      tags:
-      - Search
-  /search/query:
-    post:
-      consumes:
-      - application/json
       parameters:
-      - description: query code
-        in: body
-        name: queryCodeRequest
-        required: true
-        schema:
-          $ref: '#/definitions/search.QueryCodeRequest'
+      - in: query
+        name: code_type
+        type: integer
+      - in: query
+        name: content
+        type: string
+      - in: query
+        name: from
+        type: integer
+      - in: query
+        name: size
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/search.PingCodeSimResponse'
+            $ref: '#/definitions/model.SearchSourceCodeResponse'
       summary: 模糊查询代码
       tags:
-      - Search
+      - source_code
+  /api/v1/test/error_handler:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: test error handler
+      tags:
+      - test
+  /api/v1/test/ping_code_sim:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.PingCodeSimResponse'
+      summary: ping code sim微服务测试
+      tags:
+      - test
 swagger: "2.0"

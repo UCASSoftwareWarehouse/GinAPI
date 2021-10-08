@@ -16,7 +16,7 @@ import (
 )
 
 type uploadSourceCodeProcessor interface {
-    Process(ctx context.Context, projectName, tag, filepath string, fileType util.ArchiveFileType) *AErr.APIErr
+	Process(ctx context.Context, projectName, tag, filepath string, fileType util.ArchiveFileType) *AErr.APIErr
 	GetName() string
 }
 
@@ -28,7 +28,7 @@ type uploadBinaryProcessor interface {
 
 type Handler struct {
 	uploadSourceCodeProcessors []uploadSourceCodeProcessor
-	uploadBinaryProcessors []uploadBinaryProcessor
+	uploadBinaryProcessors     []uploadBinaryProcessor
 }
 
 var handler = &Handler{
@@ -45,18 +45,19 @@ func GetHandler() *Handler {
 	return handler
 }
 
-// UploadSourceCode @Summary 本地上传源代码
+// PatchSourceCode
+// @Summary local上传源代码
 // @Description
-// @Tags local
+// @Tags source_code
 // @Accept multipart/form-data
 // @Param file formData file true "file"
 // @Param projectName formData string true "projectName"
 // @Param tag formData string true "tag"
 // @Param fileType formData string true "fileType"
 // @Produce json
-// @Router /access/local/upload/source_code [post]
-// @Success 200 {object} model.LocalUploadSourceCodeResponse
-func (h *Handler) UploadSourceCode(c *gin.Context) (*api_format.JSONRespFormat, *AErr.APIErr) {
+// @Router /api/v1/source_code/local [patch]
+// @Success 200 {object} model.LocalPatchSourceCodeResponse
+func (h *Handler) PatchSourceCode(c *gin.Context) (*api_format.JSONRespFormat, *AErr.APIErr) {
 	projectName := c.PostForm("projectName")
 	tag := c.PostForm("tag")
 	fileType := util.ArchiveFileType(c.PostForm("fileType"))
@@ -78,31 +79,31 @@ func (h *Handler) UploadSourceCode(c *gin.Context) (*api_format.JSONRespFormat, 
 		_ = os.Remove(fp)
 	}()
 	for _, processor := range h.uploadSourceCodeProcessors {
-		log.Printf("UploadSourceCode, ready to use %s processor", processor.GetName())
+		log.Printf("PatchSourceCode, ready to use %s processor", processor.GetName())
 		e := processor.Process(c, projectName, tag, fp, fileType)
 		if e != nil {
-			log.Printf("UploadSourceCode, processor %s execution failed", processor.GetName())
+			log.Printf("PatchSourceCode, processor %s execution failed", processor.GetName())
 			api_format.UnwrapErr(c, e)
 			return nil, e
 		}
-		log.Printf("UploadSourceCode, %s processor finished execution", processor.GetName())
+		log.Printf("PatchSourceCode, %s processor finished execution", processor.GetName())
 	}
 
-	return api_format.SimpleOKResp(&model.LocalUploadSourceCodeResponse{}), nil
+	return api_format.SimpleOKResp(&model.LocalPatchSourceCodeResponse{}), nil
 }
 
-
-// UploadBinary @Summary 本地上传二进制包
+// PatchBinary
+// @Summary 本地上传二进制包
 // @Description
-// @Tags local
+// @Tags binary
 // @Accept multipart/form-data
 // @Param file formData file true "file"
 // @Param projectName formData string true "projectName"
 // @Param tag formData string true "tag"
 // @Produce json
-// @Router /access/local/upload/binary [post]
-// @Success 200 {object} model.LocalUploadSourceCodeResponse
-func (h *Handler) UploadBinary(c *gin.Context) (*api_format.JSONRespFormat, *AErr.APIErr) {
+// @Router /api/v1/binary/local [patch]
+// @Success 200 {object} model.LocalPatchBinaryResponse
+func (h *Handler) PatchBinary(c *gin.Context) (*api_format.JSONRespFormat, *AErr.APIErr) {
 	projectName := c.PostForm("projectName")
 	tag := c.PostForm("tag")
 	file, err := c.FormFile("file")
@@ -119,17 +120,17 @@ func (h *Handler) UploadBinary(c *gin.Context) (*api_format.JSONRespFormat, *AEr
 		_ = os.Remove(fp)
 	}()
 	for _, processor := range h.uploadBinaryProcessors {
-		log.Printf("UploadBinary, ready to use %s processor", processor.GetName())
+		log.Printf("PatchBinary, ready to use %s processor", processor.GetName())
 		e := processor.Process(c, projectName, tag, fp)
 		if e != nil {
-			log.Printf("UploadBinary, processor %s execution failed", processor.GetName())
+			log.Printf("PatchBinary, processor %s execution failed", processor.GetName())
 			api_format.UnwrapErr(c, e)
 			return nil, e
 		}
-		log.Printf("UploadBinary, %s processor finished execution", processor.GetName())
+		log.Printf("PatchBinary, %s processor finished execution", processor.GetName())
 	}
 
-	return api_format.SimpleOKResp(&model.LocalUploadSourceCodeResponse{}), nil
+	return api_format.SimpleOKResp(&model.LocalPatchSourceCodeResponse{}), nil
 }
 
 func (h *Handler) receiveFile(c *gin.Context, file *multipart.FileHeader) (string, *AErr.APIErr) {
@@ -142,6 +143,6 @@ func (h *Handler) receiveFile(c *gin.Context, file *multipart.FileHeader) (strin
 		e := AErr.BadRequestErr.CustomMessageF("upload file failed")
 		return "", e
 	}
-	log.Printf("UploadSourceCode, save to temp file path=[%s]", fo.Name())
+	log.Printf("PatchSourceCode, save to temp file path=[%s]", fo.Name())
 	return fo.Name(), nil
 }

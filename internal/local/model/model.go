@@ -1,4 +1,7 @@
 package model
 
-type LocalUploadSourceCodeResponse struct {
+type LocalPatchSourceCodeResponse struct {
+}
+
+type LocalPatchBinaryResponse struct {
 }

@@ -36,5 +36,9 @@ func main() {
 }
 
 func registerMiddleware(r *gin.Engine) {
+	r.NoRoute(middlewares.NotFoundHandler())
+	r.NoMethod(middlewares.NotFoundHandler())
 	r.Use(middlewares.Cors())
+	r.Use(middlewares.Recover())
+	r.Use(middlewares.ErrHandler())
 }

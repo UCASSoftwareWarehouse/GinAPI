@@ -15,8 +15,8 @@
         "version": "1.0"
     },
     "paths": {
-        "/access/local/upload/source_code": {
-            "post": {
+        "/api/v1/binary/local": {
+            "patch": {
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -24,8 +24,54 @@
                     "application/json"
                 ],
                 "tags": [
-                    "local"
+                    "binary"
                 ],
+                "summary": "本地上传二进制包",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "projectName",
+                        "name": "projectName",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "tag",
+                        "name": "tag",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.LocalPatchBinaryResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/source_code/local": {
+            "patch": {
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "source_code"
+                ],
+                "summary": "local上传源代码",
                 "parameters": [
                     {
                         "type": "file",
@@ -60,62 +106,83 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.LocalUploadSourceCodeResponse"
+                            "$ref": "#/definitions/model.LocalPatchSourceCodeResponse"
                         }
                     }
                 }
             }
         },
-        "/search/ping": {
+        "/api/v1/source_code/search": {
             "get": {
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Search"
-                ],
-                "summary": "Print",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/search.PingCodeSimResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/search/query": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Search"
+                    "source_code"
                 ],
                 "summary": "模糊查询代码",
                 "parameters": [
                     {
-                        "description": "query code",
-                        "name": "queryCodeRequest",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/search.QueryCodeRequest"
-                        }
+                        "type": "integer",
+                        "name": "code_type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "content",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "from",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "size",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/search.PingCodeSimResponse"
+                            "$ref": "#/definitions/model.SearchSourceCodeResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/test/error_handler": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "test"
+                ],
+                "summary": "test error handler",
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/test/ping_code_sim": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "test"
+                ],
+                "summary": "ping code sim微服务测试",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.PingCodeSimResponse"
                         }
                     }
                 }
@@ -123,10 +190,13 @@
         }
     },
     "definitions": {
-        "model.LocalUploadSourceCodeResponse": {
+        "model.LocalPatchBinaryResponse": {
             "type": "object"
         },
-        "search.PingCodeSimResponse": {
+        "model.LocalPatchSourceCodeResponse": {
+            "type": "object"
+        },
+        "model.PingCodeSimResponse": {
             "type": "object",
             "properties": {
                 "full_text": {
@@ -134,20 +204,31 @@
                 }
             }
         },
-        "search.QueryCodeRequest": {
+        "model.SearchSourceCodeResponse": {
             "type": "object",
             "properties": {
-                "code_type": {
-                    "type": "integer"
-                },
+                "project_files": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ProjectFile"
+                    }
+                }
+            }
+        },
+        "models.ProjectFile": {
+            "type": "object",
+            "properties": {
                 "content": {
                     "type": "string"
                 },
-                "from": {
-                    "type": "integer"
+                "project_name": {
+                    "type": "string"
                 },
-                "size": {
-                    "type": "integer"
+                "relPath": {
+                    "type": "string"
+                },
+                "tag": {
+                    "type": "string"
                 }
             }
         }

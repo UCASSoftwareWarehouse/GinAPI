@@ -21,12 +21,17 @@ var (
 		Status:  http.StatusBadRequest,
 		Stable:  true,
 	}
+	ForbiddenErr = &APIErr{
+		Message: "Forbidden",
+		Status:  http.StatusForbidden,
+		Stable:  true,
+	}
 )
 
 type APIErr struct {
-	Message string
-	Status  int
-	Stable  bool
+	Message string `json:"message"`
+	Status  int `json:"status"`
+	Stable  bool `json:"stable"`
 }
 
 func (A *APIErr) Error() string {

@@ -1,7 +1,7 @@
 package model
 
 import (
-	"GinAPI/internal/common_model"
+	"GinAPI/models"
 	"GinAPI/pb_gen"
 )
 
@@ -12,13 +12,13 @@ type PingCodeSimResponse struct {
 	FullText string `json:"full_text"`
 }
 
-type QueryCodeRequest struct {
-	Content  string                               `json:"content"`
-	CodeType pb_gen.CodeSimSearchRequest_CodeType `json:"code_type"`
-	From     int                                  `json:"from"`
-	Size     int                                  `json:"size"`
+type SearchSourceCodeRequest struct {
+	Content  string                               `form:"content"`
+	CodeType pb_gen.CodeSimSearchRequest_CodeType `form:"code_type"`
+	From     int                                  `form:"from"`
+	Size     int                                  `form:"size"`
 }
 
-type QueryCodeResponse struct {
-	ProjectFiles []*common_model.ProjectFile `json:"project_files"`
+type SearchSourceCodeResponse struct {
+	ProjectFiles []*models.ProjectFile `json:"project_files"`
 }

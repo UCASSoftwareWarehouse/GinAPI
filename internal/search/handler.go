@@ -3,8 +3,8 @@ package search
 import (
 	"GinAPI/api/api_format"
 	AErr "GinAPI/err"
-	"GinAPI/internal/common_model"
 	"GinAPI/internal/search/model"
+	"GinAPI/models"
 	"GinAPI/pb_gen"
 	"GinAPI/rpc_cli"
 	"fmt"
@@ -36,12 +36,11 @@ func isValidCodeType(codeType pb_gen.CodeSimSearchRequest_CodeType) bool {
 }
 
 // Ping
-// @Summary Print
-// @Accept json
-// @Tags Search
+// @Summary ping code sim微服务测试
+// @Tags test
 // @Produce json
-// @Router /search/ping [get]
-// @Success 200 {object} PingCodeSimResponse
+// @Router /api/v1/test/ping_code_sim [get]
+// @Success 200 {object} model.PingCodeSimResponse
 func (h Handler) Ping(c *gin.Context) (*api_format.JSONRespFormat, *AErr.APIErr) {
 	myHelloText := "HelloFromWebAPI!"
 	resp, mErr := rpc_cli.CodeSimCli.HelloWorld(c, &pb_gen.CodeSimHelloWorldRequest{
@@ -55,17 +54,16 @@ func (h Handler) Ping(c *gin.Context) (*api_format.JSONRespFormat, *AErr.APIErr)
 	}), nil
 }
 
-// Query
+// SearchSourceCode
 // @Summary 模糊查询代码
-// @Accept json
-// @Tags Search
-// @param queryCodeRequest body QueryCodeRequest true "query code"
+// @Tags source_code
+// @param queryCodeRequest query model.SearchSourceCodeRequest true "query code"
 // @Produce json
-// @Router /search/query [post]
-// @Success 200 {object} PingCodeSimResponse
-func (h Handler) Query(c *gin.Context) (*api_format.JSONRespFormat, *AErr.APIErr) {
-	req := &model.QueryCodeRequest{}
-	err := c.ShouldBindJSON(req)
+// @Router /api/v1/source_code/search [get]
+// @Success 200 {object} model.SearchSourceCodeResponse
+func (h Handler) SearchSourceCode(c *gin.Context) (*api_format.JSONRespFormat, *AErr.APIErr) {
+	var req model.SearchSourceCodeRequest
+	err := c.ShouldBindQuery(&req)
 	if err != nil {
 		return nil, AErr.BadRequestErr
 	}
@@ -92,16 +90,16 @@ func (h Handler) Query(c *gin.Context) (*api_format.JSONRespFormat, *AErr.APIErr
 		}
 	}
 	packedFiles := h.packFiles(res.GetFiles())
-	return api_format.SimpleOKResp(&model.QueryCodeResponse{
+	return api_format.SimpleOKResp(&model.SearchSourceCodeResponse{
 		ProjectFiles: packedFiles,
 	}), nil
 }
 
-func (h Handler) packFiles(files []*pb_gen.CodeSimProjectFile) []*common_model.ProjectFile {
-	packed := make([]*common_model.ProjectFile, 0, len(files))
+func (h Handler) packFiles(files []*pb_gen.CodeSimProjectFile) []*models.ProjectFile {
+	packed := make([]*models.ProjectFile, 0, len(files))
 	for _, f := range files {
-		packed = append(packed, &common_model.ProjectFile{
-			Project: &common_model.Project{
+		packed = append(packed, &models.ProjectFile{
+			Project: &models.Project{
 				ProjectName: f.GetProjectInfo().GetProjectName(),
 				Tag:         f.GetProjectInfo().GetTag(),
 			},

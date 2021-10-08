@@ -9,22 +9,24 @@ import (
 func Wrap(handler interface{}) func(c *gin.Context) {
 	var target func(c *gin.Context)
 	switch handler.(type) {
-	case SimpleJSONHandler:
-		target = wrapSimpleJSONHandler(handler.(SimpleJSONHandler))
+	case JSONHandler:
+		target = wrapJSONHandler(handler.(JSONHandler))
 		break
 	case NormalHandler:
 		target = wrapNormalHandler(handler.(NormalHandler))
 		break
 	default:
-		panic("Unsupported Search API type")
+		panic("Unsupported SearchSourceCode API type")
 	}
 	return target
 }
 
-func wrapSimpleJSONHandler(handler SimpleJSONHandler) func(c *gin.Context) {
+func wrapJSONHandler(handler JSONHandler) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		c.Set("some_key", "some_value")
 		resp, e := handler(c)
+		if len(c.Errors) > 0 {
+			return
+		}
 		if e != nil {
 			UnwrapErr(c, e)
 			return

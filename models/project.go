@@ -1,4 +1,4 @@
-package common_model
+package models
 
 type Project struct {
 	ProjectName string `json:"project_name"`
