@@ -6,6 +6,6 @@ dev:
 
 prd:
   app_name: "web-api"
-  host: "1.2.3.4" # for test
+  host: "0.0.0.0" # for test
   port: 4400
   code_sim_service_addr: "http://code_sim:4401"

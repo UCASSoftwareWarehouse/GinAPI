@@ -9,6 +9,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"os"
 )
 
 // @title SoftwareWarehouse Web API
@@ -38,17 +39,28 @@ func main() {
 
 func initConfig() {
 	var configPath string
-	var dev bool
+	var env string
 	flag.StringVar(&configPath, "config_path", "", "配置文件路径")
-	flag.BoolVar(&dev, "dev", true, "是否为测试环境")
+	flag.StringVar(&env, "env", "", "是否为测试测试环境，值为dev或prd")
 	flag.Parse()
-	env := func() config.ConfigurationEnv {
-		if dev {
-			return config.DevEnv
+	e := func() config.ConfigurationEnv {
+		if env == "" {
+			var ok bool
+			env, ok = os.LookupEnv("ENV")
+			if !ok {
+				panic("ENV is not set, plz check your environ")
+			}
 		}
-		return config.PrdEnv
+		switch env {
+		case "dev":
+			return config.DevEnv
+		case "prd":
+			return config.PrdEnv
+		default:
+			panic("illegal ENV environ, should be dev or prd")
+		}
 	}()
-	config.InitConfig(configPath, env)
+	config.InitConfig(configPath, e)
 }
 
 func registerMiddleware(r *gin.Engine) {
