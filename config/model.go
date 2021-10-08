@@ -4,6 +4,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
+	"os"
 )
 
 type ConfigurationEnv string
@@ -22,13 +23,13 @@ type EachConfig struct {
 	CodeSimServiceAddr string `yaml:"code_sim_service_addr"`
 }
 
-const (
-	DefaultConfigFilepath = "/Users/purchaser/go/src/GinAPI/config.yml"
-)
-
 func parse(configFilepath string) Configuration {
 	if configFilepath == "" {
-		configFilepath = DefaultConfigFilepath
+		envConfigPath, ok := os.LookupEnv("CONFIG_PATH")
+		if !ok {
+			panic("CONFIG_PATH not set, plz check your environs")
+		}
+		configFilepath = envConfigPath
 	}
 	bs, err := ioutil.ReadFile(configFilepath)
 	if err != nil {

@@ -6,6 +6,7 @@ import (
 	_ "GinAPI/docs"
 	"GinAPI/middlewares"
 	"GinAPI/rpc_cli"
+	"flag"
 	"fmt"
 	"github.com/gin-gonic/gin"
 )
@@ -23,7 +24,7 @@ import (
 
 // @BasePath
 func main() {
-	config.InitConfigDefault()
+	initConfig()
 	rpc_cli.InitRPCClient()
 	r := gin.Default()
 	registerMiddleware(r)
@@ -33,6 +34,21 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func initConfig() {
+	var configPath string
+	var dev bool
+	flag.StringVar(&configPath, "config_path", "", "配置文件路径")
+	flag.BoolVar(&dev, "dev", true, "是否为测试环境")
+	flag.Parse()
+	env := func() config.ConfigurationEnv {
+		if dev {
+			return config.DevEnv
+		}
+		return config.PrdEnv
+	}()
+	config.InitConfig(configPath, env)
 }
 
 func registerMiddleware(r *gin.Engine) {
