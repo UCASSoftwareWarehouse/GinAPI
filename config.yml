@@ -2,10 +2,14 @@ dev:
   app_name: "web-api"
   host: "0.0.0.0"
   port: 4400
+  code_sim_service_name: "code_sim"
   code_sim_service_addr: "localhost:4401"
+  consul_addr: "133.133.135.42:8500"
 
 prd:
   app_name: "web-api"
   host: "0.0.0.0" # for test
   port: 4400
+  code_sim_service_name: "code_sim"
   code_sim_service_addr: "code_sim:4401"
+  consul_addr: "consul_server:8500"

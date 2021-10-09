@@ -40,8 +40,8 @@ func ping(c *gin.Context) {
 const (
 	prefixSourceCode = "source_code"
 	prefixBinary     = "binary"
-	prefixProject = "project"
-	prefixTest    = "test"
+	prefixProject    = "project"
+	prefixTest       = "test"
 )
 
 type sourceCodeAPI struct{}

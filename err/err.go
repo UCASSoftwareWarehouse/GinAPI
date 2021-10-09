@@ -30,8 +30,8 @@ var (
 
 type APIErr struct {
 	Message string `json:"message"`
-	Status  int `json:"status"`
-	Stable  bool `json:"stable"`
+	Status  int    `json:"status"`
+	Stable  bool   `json:"stable"`
 }
 
 func (A *APIErr) Error() string {

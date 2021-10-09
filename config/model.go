@@ -20,7 +20,15 @@ type EachConfig struct {
 	AppName            string `yaml:"app_name"`
 	Host               string `yaml:"host"`
 	Port               int    `yaml:"port"`
+	CodeSimServiceName string `yaml:"code_sim_service_name"`
 	CodeSimServiceAddr string `yaml:"code_sim_service_addr"`
+	ConsulAddr string `yaml:"consul_addr"`
+
+	Env ConfigurationEnv
+}
+
+func (c *EachConfig) GetEnv() ConfigurationEnv{
+	return c.Env
 }
 
 func parse(configFilepath string) Configuration {

@@ -9,7 +9,7 @@ import (
 )
 
 func Test_initCodeSimCli(t *testing.T) {
-	config.InitConfigDefault()
+	config.InitConfig("/Users/purchaser/go/src/GinAPI/config.yml", config.DevEnv)
 	cli := initCodeSimCli()
 	resp, err := cli.HelloWorld(context.Background(), &pb_gen.CodeSimHelloWorldRequest{HelloText: "hello!"})
 	t.Logf("resp=[%v], err=[%v]", resp, err)

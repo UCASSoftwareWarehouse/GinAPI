@@ -21,4 +21,3 @@ func Recover() gin.HandlerFunc {
 		c.Next()
 	}
 }
-
