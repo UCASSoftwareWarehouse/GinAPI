@@ -5,6 +5,6 @@ WORKDIR /go/src/GinAPI
 COPY . .
 
 ENV CONFIG_PATH=/go/src/GinAPI/config.yml
-ENV ENV=PRD
+ENV ENV=prd
 
 CMD ["/bin/bash", "-c", "./out/GinAPI"]
