@@ -24,6 +24,7 @@ func GetHandler() *Handler {
 
 var validCodeTypes = []pb_gen.CodeSimSearchRequest_CodeType{
 	pb_gen.CodeSimSearchRequest_python,
+	pb_gen.CodeSimSearchRequest_golang,
 }
 
 func isValidCodeType(codeType pb_gen.CodeSimSearchRequest_CodeType) bool {
@@ -67,12 +68,8 @@ func (h Handler) SearchSourceCode(c *gin.Context) (*api_format.JSONRespFormat, *
 	if err != nil {
 		return nil, AErr.BadRequestErr
 	}
-	if !isValidCodeType(req.CodeType) {
-		req.CodeType = pb_gen.CodeSimSearchRequest_unknown
-	}
 	res, err := rpc_cli.CodeSimCli.Search(c, &pb_gen.CodeSimSearchRequest{
 		MatchText:       req.Content,
-		MatchTextIsCode: isValidCodeType(req.CodeType),
 		CodeType:        req.CodeType,
 		Limit:           int32(req.Size),
 		Offset:          int32(req.From),

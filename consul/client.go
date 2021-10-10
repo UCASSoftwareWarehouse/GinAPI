@@ -25,4 +25,3 @@ func DailWithConsulLB(serviceName string, dailOpt []grpc.DialOption) (*grpc.Clie
 	log.Println(fmt.Sprintf("gRpc consul client [%s] start success", serviceName))
 	return conn, nil
 }
-

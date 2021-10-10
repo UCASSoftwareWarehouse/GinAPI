@@ -6,10 +6,8 @@ import (
 	_ "GinAPI/docs"
 	"GinAPI/middlewares"
 	"GinAPI/rpc_cli"
-	"flag"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"os"
 )
 
 // @title SoftwareWarehouse Web API
@@ -25,7 +23,7 @@ import (
 
 // @BasePath
 func main() {
-	initConfig()
+	config.InitConfig()
 	rpc_cli.InitRPCClient()
 	r := gin.Default()
 	registerMiddleware(r)
@@ -35,32 +33,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-}
-
-func initConfig() {
-	var configPath string
-	var env string
-	flag.StringVar(&configPath, "config_path", "", "配置文件路径")
-	flag.StringVar(&env, "env", "", "是否为测试测试环境，值为dev或prd")
-	flag.Parse()
-	e := func() config.ConfigurationEnv {
-		if env == "" {
-			var ok bool
-			env, ok = os.LookupEnv("ENV")
-			if !ok {
-				panic("ENV is not set, plz check your environ")
-			}
-		}
-		switch env {
-		case "dev":
-			return config.DevEnv
-		case "prd":
-			return config.PrdEnv
-		default:
-			panic("illegal ENV environ, should be dev or prd")
-		}
-	}()
-	config.InitConfig(configPath, e)
 }
 
 func registerMiddleware(r *gin.Engine) {

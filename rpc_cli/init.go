@@ -24,7 +24,7 @@ func initClientWithAddr(serviceAddr string, dialOpt []grpc.DialOption) *grpc.Cli
 	return conn
 }
 
-func initClientWithLB(serviceName string,  dialOpt []grpc.DialOption) *grpc.ClientConn {
+func initClientWithLB(serviceName string, dialOpt []grpc.DialOption) *grpc.ClientConn {
 	conn, err := consul.DailWithConsulLB(serviceName, dialOpt)
 	if err != nil {
 		panic(err)
