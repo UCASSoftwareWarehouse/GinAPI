@@ -2,6 +2,9 @@ package err
 
 import (
 	"fmt"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"log"
 	"net/http"
 )
 
@@ -51,5 +54,22 @@ func (A *APIErr) CustomMessageF(msg string, formatter ...interface{}) *APIErr {
 		Message: fmt.Sprintf(msg, formatter...),
 		Status:  A.Status,
 		Stable:  A.Stable,
+	}
+}
+
+func WrapRPCError(err error) *APIErr {
+	// TODO 使用status透传下游错误，之后需要统一处理rpc错误。
+	errStatus, ok := status.FromError(err)
+	if !ok {
+		return InternalErr.CustomMessageF(err.Error())
+	}
+	log.Printf("wrap rpc err, message=[%s], code=[%d]", errStatus.Message(), errStatus.Code())
+	switch errStatus.Code() {
+	case codes.InvalidArgument, codes.NotFound, codes.PermissionDenied:
+		return BadRequestErr.CustomMessage(errStatus.Message())
+	case codes.Unimplemented:
+		return ForbiddenErr.CustomMessage(errStatus.Message())
+	default:
+		return InternalErr.CustomMessage(errStatus.Message())
 	}
 }

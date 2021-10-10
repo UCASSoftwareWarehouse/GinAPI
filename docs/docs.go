@@ -140,7 +140,7 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "name": "code_type",
+                        "name": "codeType",
                         "in": "query"
                     },
                     {
@@ -156,6 +156,11 @@ var doc = `{
                     {
                         "type": "integer",
                         "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "withSource",
                         "in": "query"
                     }
                 ],

@@ -7,10 +7,9 @@ import (
 	"GinAPI/models"
 	"GinAPI/pb_gen"
 	"GinAPI/rpc_cli"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"log"
 )
 
@@ -68,23 +67,17 @@ func (h Handler) SearchSourceCode(c *gin.Context) (*api_format.JSONRespFormat, *
 	if err != nil {
 		return nil, AErr.BadRequestErr
 	}
+	reqStr, _ := json.Marshal(req)
+	log.Printf("SearchSourceCode reqStr=[%s]", reqStr)
 	res, err := rpc_cli.CodeSimCli.Search(c, &pb_gen.CodeSimSearchRequest{
-		MatchText:       req.Content,
-		CodeType:        req.CodeType,
-		Limit:           int32(req.Size),
-		Offset:          int32(req.From),
+		MatchText:  req.Content,
+		CodeType:   req.CodeType,
+		Limit:      int32(req.Size),
+		Offset:     int32(req.From),
+		WithSource: req.WithSource,
 	})
 	if err != nil {
-		// TODO 使用status透传下游错误，之后需要统一处理rpc错误。
-		errStatus, ok := status.FromError(err)
-		if !ok {
-			return nil, AErr.InternalErr
-		}
-		log.Println(errStatus.Message())
-		log.Println(errStatus.Code())
-		if codes.InvalidArgument == errStatus.Code() {
-			return nil, AErr.BadRequestErr.CustomMessage(errStatus.Message())
-		}
+		return nil, AErr.WrapRPCError(err)
 	}
 	packedFiles := h.packFiles(res.GetFiles())
 	return api_format.SimpleOKResp(&model.SearchSourceCodeResponse{
@@ -101,8 +94,8 @@ func (h Handler) packFiles(files []*pb_gen.CodeSimProjectFile) []*models.Project
 				Tag:         f.GetProjectInfo().GetTag(),
 			},
 			RelPath: f.GetRelativePath(),
+			Content: string(f.GetContent()),
 		})
 	}
-	// TODO get contents of each project file
 	return packed
 }

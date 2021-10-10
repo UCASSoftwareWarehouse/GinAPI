@@ -107,7 +107,7 @@ paths:
     get:
       parameters:
       - in: query
-        name: code_type
+        name: codeType
         type: integer
       - in: query
         name: content
@@ -118,6 +118,9 @@ paths:
       - in: query
         name: size
         type: integer
+      - in: query
+        name: withSource
+        type: boolean
       produces:
       - application/json
       responses:

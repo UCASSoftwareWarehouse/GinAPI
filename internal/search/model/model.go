@@ -13,10 +13,11 @@ type PingCodeSimResponse struct {
 }
 
 type SearchSourceCodeRequest struct {
-	Content  string                               `form:"content"`
-	CodeType pb_gen.CodeSimSearchRequest_CodeType `form:"code_type"`
-	From     int                                  `form:"from"`
-	Size     int                                  `form:"size"`
+	Content    string                               `form:"content"`
+	CodeType   pb_gen.CodeSimSearchRequest_CodeType `form:"codeType"`
+	From       int                                  `form:"from"`
+	Size       int                                  `form:"size"`
+	WithSource bool                                 `form:"withSource"`
 }
 
 type SearchSourceCodeResponse struct {
