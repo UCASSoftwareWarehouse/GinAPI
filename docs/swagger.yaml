@@ -107,8 +107,10 @@ paths:
     get:
       parameters:
       - in: query
-        name: codeType
-        type: integer
+        items:
+          type: integer
+        name: codeTypes
+        type: array
       - in: query
         name: content
         type: string

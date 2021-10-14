@@ -139,8 +139,11 @@ var doc = `{
                 "summary": "模糊查询代码",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "name": "codeType",
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "name": "codeTypes",
                         "in": "query"
                     },
                     {

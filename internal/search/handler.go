@@ -71,7 +71,7 @@ func (h Handler) SearchSourceCode(c *gin.Context) (*api_format.JSONRespFormat, *
 	log.Printf("SearchSourceCode reqStr=[%s]", reqStr)
 	res, err := rpc_cli.CodeSimCli.Search(c, &pb_gen.CodeSimSearchRequest{
 		MatchText:  req.Content,
-		CodeType:   req.CodeType,
+		CodeTypes:  req.CodeTypes,
 		Limit:      int32(req.Size),
 		Offset:     int32(req.From),
 		WithSource: req.WithSource,
