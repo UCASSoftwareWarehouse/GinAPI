@@ -19,7 +19,7 @@ var (
 )
 
 var fileTypeMapper = map[util.ArchiveFileType]pb_gen.CodeSimUploadFileType{
-	util.ArchiveFileTypeZip: pb_gen.CodeSimUploadFileType_zip,
+	util.ArchiveFileTypeZip: pb_gen.CodeSimUploadFileType_code_sim_upload_file_type_zip,
 }
 
 type Uploader struct {
@@ -104,7 +104,7 @@ func (Uploader) Process(ctx context.Context, projectName, tag string, filepath s
 		return AErr.InternalErr.CustomMessageF("failed to receive upstream status response, err=[%v]", err)
 	}
 
-	if response.GetStatus() != pb_gen.CodeSimUploadStatus_OK {
+	if response.GetStatus() != pb_gen.CodeSimUploadStatus_code_sim_upload_status_OK {
 		return AErr.InternalErr.CustomMessageF("upload failed, response=[%s], msg=[%s]", response, response.GetMessage())
 	}
 
