@@ -56,6 +56,7 @@ func (h Handler) Ping(c *gin.Context) (*api_format.JSONRespFormat, *AErr.APIErr)
 
 // SearchSourceCode
 // @Summary 模糊查询代码
+// @Description codeType表示按照什么类型搜索代码，0表示纯文本，1表示python，2表示golang。是一个数组，表示可以混合类型查询。其他语言类型后期可以继续添加。
 // @Tags source_code
 // @param queryCodeRequest query model.SearchSourceCodeRequest true "query code"
 // @Produce json

@@ -43,6 +43,10 @@ func initCmdArgs(args *args) {
 }
 
 func initEnvironArgs(args *args) {
+	configPath, ok := os.LookupEnv("CONFIG_PATH")
+	if ok {
+		args.ConfigPath = configPath
+	}
 	env, ok := os.LookupEnv("ENV")
 	if ok {
 		e, _ := convert2Env(env)
