@@ -204,5 +204,5 @@ var CodeSim_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "code_sim/code_sim_service.proto",
+	Metadata: "code_sim/remote_code_service.proto",
 }
