@@ -34,6 +34,7 @@ type EachConfig struct {
 	CodeSimServiceName    string `yaml:"code_sim_service_name"`
 	CodeSimServiceAddr    string `yaml:"code_sim_service_addr"`
 	ConsulAddr            string `yaml:"consul_addr"`
+	RemoteCodeServiceName string `yaml:"remote_code_service_name"`
 	RemoteCodeServiceAddr string `yaml:"remote_code_service_addr"`
 	Env                   ConfigurationEnv
 }

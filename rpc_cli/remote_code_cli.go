@@ -8,11 +8,13 @@ import (
 )
 
 func initRemoteCodeCli() pb_gen.RemoteCodeServiceClient {
+	var conn *grpc.ClientConn
 	var dialOpt []grpc.DialOption
 	dialOpt = append(dialOpt, grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(5*1024*1024*1024*1024), grpc.MaxCallSendMsgSize(5*1024*1024*1024*1024)), grpc.WithInsecure())
-	conn, err := grpc.Dial(config.Conf.RemoteCodeServiceAddr, dialOpt...)
-	if err != nil {
-		panic(err)
+	if config.Conf.GetEnv() == config.DevEnv {
+		conn = initClientWithAddr(config.Conf.RemoteCodeServiceAddr, dialOpt)
+	} else {
+		conn = initClientWithLB(config.Conf.RemoteCodeServiceName, dialOpt)
 	}
 	cli := pb_gen.NewRemoteCodeServiceClient(conn)
 	return cli
