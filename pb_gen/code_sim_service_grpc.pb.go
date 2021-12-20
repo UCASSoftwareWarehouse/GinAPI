@@ -21,6 +21,7 @@ type CodeSimClient interface {
 	HelloWorld(ctx context.Context, in *CodeSimHelloWorldRequest, opts ...grpc.CallOption) (*CodeSimHelloWorldResponse, error)
 	Search(ctx context.Context, in *CodeSimSearchRequest, opts ...grpc.CallOption) (*CodeSimSearchResponse, error)
 	Upload(ctx context.Context, opts ...grpc.CallOption) (CodeSim_UploadClient, error)
+	Delete(ctx context.Context, in *CodeSimDeleteRequest, opts ...grpc.CallOption) (*CodeSimDeleteResponse, error)
 }
 
 type codeSimClient struct {
@@ -83,6 +84,15 @@ func (x *codeSimUploadClient) CloseAndRecv() (*CodeSimUploadResponse, error) {
 	return m, nil
 }
 
+func (c *codeSimClient) Delete(ctx context.Context, in *CodeSimDeleteRequest, opts ...grpc.CallOption) (*CodeSimDeleteResponse, error) {
+	out := new(CodeSimDeleteResponse)
+	err := c.cc.Invoke(ctx, "/pb.CodeSim/Delete", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CodeSimServer is the server API for CodeSim service.
 // All implementations must embed UnimplementedCodeSimServer
 // for forward compatibility
@@ -90,6 +100,7 @@ type CodeSimServer interface {
 	HelloWorld(context.Context, *CodeSimHelloWorldRequest) (*CodeSimHelloWorldResponse, error)
 	Search(context.Context, *CodeSimSearchRequest) (*CodeSimSearchResponse, error)
 	Upload(CodeSim_UploadServer) error
+	Delete(context.Context, *CodeSimDeleteRequest) (*CodeSimDeleteResponse, error)
 	mustEmbedUnimplementedCodeSimServer()
 }
 
@@ -105,6 +116,9 @@ func (UnimplementedCodeSimServer) Search(context.Context, *CodeSimSearchRequest)
 }
 func (UnimplementedCodeSimServer) Upload(CodeSim_UploadServer) error {
 	return status.Errorf(codes.Unimplemented, "method Upload not implemented")
+}
+func (UnimplementedCodeSimServer) Delete(context.Context, *CodeSimDeleteRequest) (*CodeSimDeleteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
 func (UnimplementedCodeSimServer) mustEmbedUnimplementedCodeSimServer() {}
 
@@ -181,6 +195,24 @@ func (x *codeSimUploadServer) Recv() (*CodeSimUploadRequest, error) {
 	return m, nil
 }
 
+func _CodeSim_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CodeSimDeleteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CodeSimServer).Delete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/pb.CodeSim/Delete",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CodeSimServer).Delete(ctx, req.(*CodeSimDeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CodeSim_ServiceDesc is the grpc.ServiceDesc for CodeSim service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -195,6 +227,10 @@ var CodeSim_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Search",
 			Handler:    _CodeSim_Search_Handler,
+		},
+		{
+			MethodName: "Delete",
+			Handler:    _CodeSim_Delete_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
