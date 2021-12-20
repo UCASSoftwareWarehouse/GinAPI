@@ -4,6 +4,7 @@ import (
 	"GinAPI/api/api_format"
 	"GinAPI/err"
 	"GinAPI/internal/local"
+	"GinAPI/internal/project"
 	"GinAPI/internal/remote"
 	"GinAPI/internal/search"
 	"github.com/gin-gonic/gin"
@@ -19,6 +20,7 @@ func Register(r *gin.Engine) {
 	sourceCodeRouter := rg.Group(prefixSourceCode)
 	binaryRouter := rg.Group(prefixBinary)
 	testRouter := rg.Group(prefixTest)
+	projectRouter := rg.Group(prefixProject)
 
 	sourceCodeAPI := sourceCodeAPI{}
 	sourceCodeRouter.PATCH("local", api_format.Wrap(sourceCodeAPI.localPatchSourceCode()))
@@ -32,6 +34,9 @@ func Register(r *gin.Engine) {
 	testAPI := testAPI{}
 	testRouter.GET("ping_code_sim", api_format.Wrap(testAPI.pingCodeSim()))
 	testRouter.GET("error_handler", api_format.Wrap(testAPI.testErrorHandler()))
+
+	projectAPI := projectAPI{}
+	projectRouter.DELETE(":projectName/:tag", api_format.Wrap(projectAPI.delete()))
 }
 
 func ping(c *gin.Context) {
@@ -100,5 +105,13 @@ func (testAPI) testErrorHandler() api_format.JSONHandler {
 	return func(c *gin.Context) (*api_format.JSONRespFormat, *err.APIErr) {
 		_ = c.AbortWithError(err.BadRequestErr.Status, err.BadRequestErr)
 		return nil, nil
+	}
+}
+
+type projectAPI struct {}
+
+func (projectAPI) delete() api_format.JSONHandler {
+	return func(ctx *gin.Context) (*api_format.JSONRespFormat, *err.APIErr) {
+		return project.GetHandler().Delete(ctx)
 	}
 }
