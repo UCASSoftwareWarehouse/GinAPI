@@ -8,11 +8,13 @@ import (
 )
 
 var (
-	CodeSimCli pb_gen.CodeSimClient
+	CodeSimCli    pb_gen.CodeSimClient
+	RemoteCodeCli pb_gen.RemoteCodeServiceClient
 )
 
 func InitRPCClient() {
 	CodeSimCli = initCodeSimCli()
+	RemoteCodeCli = initRemoteCodeCli()
 }
 
 func initClientWithAddr(serviceAddr string, dialOpt []grpc.DialOption) *grpc.ClientConn {

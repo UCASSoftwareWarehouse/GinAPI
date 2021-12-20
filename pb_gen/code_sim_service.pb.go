@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.27.1
 // 	protoc        v3.5.0
-// source: code_sim/code_sim_service.proto
+// source: code_sim/remote_code_service.proto
 
 package pb_gen
 
