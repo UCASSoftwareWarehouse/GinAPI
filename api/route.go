@@ -4,9 +4,11 @@ import (
 	"GinAPI/api/api_format"
 	"GinAPI/err"
 	"GinAPI/internal/local"
+	"GinAPI/internal/ms_local"
 	"GinAPI/internal/project"
 	"GinAPI/internal/remote"
 	"GinAPI/internal/search"
+
 	"github.com/gin-gonic/gin"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
@@ -37,6 +39,17 @@ func Register(r *gin.Engine) {
 
 	projectAPI := projectAPI{}
 	projectRouter.DELETE(":projectName/:tag", api_format.Wrap(projectAPI.delete()))
+
+	//ms_local
+	localProjectRouter := rg.Group(prefixLocalProject)
+	localProjectAPI := LocalProjectAPI{}
+	localProjectRouter.POST("create", api_format.Wrap(localProjectAPI.CreateProject()))
+	localProjectRouter.GET("/:id", api_format.Wrap(localProjectAPI.GetProject()))
+	localProjectRouter.POST("/:id/upload", api_format.Wrap(localProjectAPI.Upload()))
+	localProjectRouter.GET("/:id/download", api_format.Wrap(localProjectAPI.Download()))
+	localProjectRouter.GET("/search", api_format.Wrap(localProjectAPI.Search()))
+	localProjectRouter.GET("/:id/codes", api_format.Wrap(localProjectAPI.GetCodes()))
+	localProjectRouter.DELETE("/:id/delete", api_format.Wrap(localProjectAPI.Delete()))
 }
 
 func ping(c *gin.Context) {
@@ -46,10 +59,11 @@ func ping(c *gin.Context) {
 }
 
 const (
-	prefixSourceCode = "source_code"
-	prefixBinary     = "binary"
-	prefixProject    = "project"
-	prefixTest       = "test"
+	prefixSourceCode   = "source_code"
+	prefixBinary       = "binary"
+	prefixProject      = "project"
+	prefixTest         = "test"
+	prefixLocalProject = "projects"
 )
 
 type sourceCodeAPI struct{}
@@ -108,10 +122,54 @@ func (testAPI) testErrorHandler() api_format.JSONHandler {
 	}
 }
 
-type projectAPI struct {}
+type projectAPI struct{}
 
 func (projectAPI) delete() api_format.JSONHandler {
 	return func(ctx *gin.Context) (*api_format.JSONRespFormat, *err.APIErr) {
 		return project.GetHandler().Delete(ctx)
+	}
+}
+
+type LocalProjectAPI struct{}
+
+func (LocalProjectAPI) CreateProject() api_format.JSONHandler {
+	return func(ctx *gin.Context) (*api_format.JSONRespFormat, *err.APIErr) {
+		return ms_local.GetHnadler().CreateProject(ctx)
+	}
+}
+
+func (LocalProjectAPI) GetProject() api_format.JSONHandler {
+	return func(ctx *gin.Context) (*api_format.JSONRespFormat, *err.APIErr) {
+		return ms_local.GetHnadler().GetProject(ctx)
+	}
+}
+
+func (LocalProjectAPI) Delete() api_format.JSONHandler {
+	return func(ctx *gin.Context) (*api_format.JSONRespFormat, *err.APIErr) {
+		return ms_local.GetHnadler().Delete(ctx)
+	}
+}
+
+func (LocalProjectAPI) Upload() api_format.JSONHandler {
+	return func(ctx *gin.Context) (*api_format.JSONRespFormat, *err.APIErr) {
+		return ms_local.GetHnadler().Upload(ctx)
+	}
+}
+
+func (LocalProjectAPI) Download() api_format.NormalHandler {
+	return func(ctx *gin.Context) {
+		ms_local.GetHnadler().Download(ctx)
+	}
+}
+
+func (LocalProjectAPI) Search() api_format.JSONHandler {
+	return func(ctx *gin.Context) (*api_format.JSONRespFormat, *err.APIErr) {
+		return ms_local.GetHnadler().SearchProjects(ctx)
+	}
+}
+
+func (LocalProjectAPI) GetCodes() api_format.JSONHandler {
+	return func(ctx *gin.Context) (*api_format.JSONRespFormat, *err.APIErr) {
+		return ms_local.GetHnadler().GetCodes(ctx)
 	}
 }

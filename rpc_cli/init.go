@@ -3,18 +3,21 @@ package rpc_cli
 import (
 	"GinAPI/consul"
 	"GinAPI/pb_gen"
-	"google.golang.org/grpc"
 	"log"
+
+	"google.golang.org/grpc"
 )
 
 var (
 	CodeSimCli    pb_gen.CodeSimClient
 	RemoteCodeCli pb_gen.RemoteCodeServiceClient
+	MSLocalCli    pb_gen.MSLocalClient
 )
 
 func InitRPCClient() {
 	CodeSimCli = initCodeSimCli()
 	RemoteCodeCli = initRemoteCodeCli()
+	MSLocalCli    = initMSLocalCli()
 }
 
 func initClientWithAddr(serviceAddr string, dialOpt []grpc.DialOption) *grpc.ClientConn {

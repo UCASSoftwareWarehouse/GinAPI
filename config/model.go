@@ -2,9 +2,10 @@ package config
 
 import (
 	"errors"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
+
+	"gopkg.in/yaml.v2"
 )
 
 type ConfigurationEnv string
@@ -36,6 +37,8 @@ type EachConfig struct {
 	ConsulAddr            string `yaml:"consul_addr"`
 	RemoteCodeServiceName string `yaml:"remote_code_service_name"`
 	RemoteCodeServiceAddr string `yaml:"remote_code_service_addr"`
+	MSLoaclServiceName    string `yaml:"ms_local_service_name"`
+	MSLocalServiceAddr    string `yaml:"ms_local_service_addr"`
 	Env                   ConfigurationEnv
 }
 
