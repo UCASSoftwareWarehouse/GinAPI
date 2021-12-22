@@ -62,10 +62,10 @@ func (h *Handler) DownloadPypi(c *gin.Context) (*api_format.JSONRespFormat, *AEr
 		//PythonVersion: "",
 		Package: packageName,
 		Version: c.Query("version"),
-		Metadata: &pb_gen.UploadMetadata{
+		Metadata: &pb_gen.UploadMetadata2{
 			ProjectId: uint64(parseUserId),
 			UserId:    uint64(parseProjectId),
-			FileInfo: &pb_gen.FileInfo{
+			FileInfo: &pb_gen.FileInfo2{
 				FileName: "",
 				FileType: 0,
 			},
@@ -77,6 +77,22 @@ func (h *Handler) DownloadPypi(c *gin.Context) (*api_format.JSONRespFormat, *AEr
 
 func (h *Handler) DownloadApt(c *gin.Context) (*api_format.JSONRespFormat, *AErr.APIErr) {
 
+	userId := c.Query("userId")
+	if len(userId) == 0 {
+		return api_format.NewJSONResp(http.StatusOK, "用户id不能为空", nil), nil
+	}
+	parseUserId, err := strconv.ParseInt(userId, 10, 64)
+	if err != nil {
+		return api_format.NewJSONResp(http.StatusOK, "invalid userId", nil), nil
+	}
+	projectId := c.Query("projectId")
+	if len(projectId) == 0 {
+		return api_format.NewJSONResp(http.StatusOK, "项目id不能为空", nil), nil
+	}
+	parseProjectId, err := strconv.ParseInt(projectId, 10, 64)
+	if err != nil {
+		return api_format.NewJSONResp(http.StatusOK, "invalid projectId", nil), nil
+	}
 	packageName := c.Query("package")
 	if len(packageName) == 0 {
 		return api_format.NewJSONResp(http.StatusOK, "请输入包名", nil), nil
@@ -90,10 +106,10 @@ func (h *Handler) DownloadApt(c *gin.Context) (*api_format.JSONRespFormat, *AErr
 		Package: packageName,
 		Version: c.Query("version"),
 		Type:    codeType,
-		Metadata: &pb_gen.UploadMetadata{
-			ProjectId: 0,
-			UserId:    1,
-			FileInfo: &pb_gen.FileInfo{
+		Metadata: &pb_gen.UploadMetadata2{
+			ProjectId: uint64(parseProjectId),
+			UserId:    uint64(parseUserId),
+			FileInfo: &pb_gen.FileInfo2{
 				FileName: "",
 				FileType: 0,
 			},

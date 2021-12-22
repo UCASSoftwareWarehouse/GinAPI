@@ -6,8 +6,8 @@ dev:
   code_sim_service_addr: "localhost:4401"
   consul_addr: "133.133.135.42:8500"
   remote_code_service_name: "remote_code"
-  remote_code_service_addr: "133.133.135.42:6001"
-#  remote_code_service_addr: "localhost:6001"
+#  remote_code_service_addr: "133.133.135.42:6001"
+  remote_code_service_addr: "localhost:6001"
 
 prd:
   app_name: "web-api"
