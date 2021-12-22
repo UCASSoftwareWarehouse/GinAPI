@@ -26,3 +26,13 @@ type SearchSourceCodeRequest struct {
 type SearchSourceCodeResponse struct {
 	ProjectFiles []*models.ProjectFile `json:"project_files"`
 }
+
+// DeleteSourceCodeRequest 删除源代码请求
+type DeleteSourceCodeRequest struct {
+	ProjectName string `json:"project_name"`
+	Tag string `json:"tag"`
+}
+
+type DeleteSourceCodeResponse struct {
+
+}

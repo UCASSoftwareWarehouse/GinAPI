@@ -8,6 +8,8 @@ definitions:
       full_text:
         type: string
     type: object
+  model.ProjectDeleteResponse:
+    type: object
   model.SearchSourceCodeResponse:
     properties:
       project_files:
@@ -68,6 +70,29 @@ paths:
       summary: 本地上传二进制包
       tags:
       - binary
+  /api/v1/project/{projectName}/{tag}:
+    delete:
+      parameters:
+      - description: projectName
+        in: path
+        name: projectName
+        required: true
+        type: string
+      - description: tag
+        in: path
+        name: tag
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ProjectDeleteResponse'
+      summary: 删除Project
+      tags:
+      - project
   /api/v1/source_code/local:
     patch:
       consumes:

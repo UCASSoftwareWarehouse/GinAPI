@@ -76,6 +76,41 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/project/{projectName}/{tag}": {
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "project"
+                ],
+                "summary": "删除Project",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "projectName",
+                        "name": "projectName",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "tag",
+                        "name": "tag",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.ProjectDeleteResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/source_code/local": {
             "patch": {
                 "consumes": [
@@ -228,6 +263,9 @@ var doc = `{
                     "type": "string"
                 }
             }
+        },
+        "model.ProjectDeleteResponse": {
+            "type": "object"
         },
         "model.SearchSourceCodeResponse": {
             "type": "object",
