@@ -172,7 +172,7 @@ func (h *Handler) GetCodes(c *gin.Context) (*api_format.JSONRespFormat, *AErr.AP
 	}
 	dtype, err := strconv.ParseInt(c.Query("dtype"), 10, 32) //dtype 类型
 	fid := c.Query("fileId")
-	if fid == " " {
+	if fid == "" {
 		return nil, AErr.BadRequestErr.CustomMessage("file id can't be empty")
 	}
 	if pb_gen.FileType(dtype) == pb_gen.FileType_code_dir {
@@ -234,7 +234,8 @@ func (h *Handler) Download(c *gin.Context) {
 		return
 	}
 	fid := c.Query("fileId")
-	if fid == " " {
+	log.Printf("Download fid is %s", fid)
+	if fid == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"msg":     "file id can't be empty",

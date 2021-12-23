@@ -49,7 +49,7 @@ func Register(r *gin.Engine) {
 	localProjectRouter.GET("/:id/download", api_format.Wrap(localProjectAPI.Download()))
 	localProjectRouter.GET("/search", api_format.Wrap(localProjectAPI.Search()))
 	localProjectRouter.GET("/:id/codes", api_format.Wrap(localProjectAPI.GetCodes()))
-	localProjectRouter.DELETE("/:id/delete", api_format.Wrap(localProjectAPI.Delete()))
+	localProjectRouter.GET("/:id/delete", api_format.Wrap(localProjectAPI.Delete()))
 }
 
 func ping(c *gin.Context) {
