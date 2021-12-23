@@ -63,8 +63,8 @@ func (h *Handler) DownloadPypi(c *gin.Context) (*api_format.JSONRespFormat, *AEr
 		Package: packageName,
 		Version: c.Query("version"),
 		Metadata: &pb_gen.UploadMetadata2{
-			ProjectId: uint64(parseUserId),
-			UserId:    uint64(parseProjectId),
+			ProjectId: uint64(parseProjectId),
+			UserId:    uint64(parseUserId),
 			FileInfo: &pb_gen.FileInfo2{
 				FileName: "",
 				FileType: 0,
