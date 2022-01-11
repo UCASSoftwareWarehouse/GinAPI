@@ -105,9 +105,69 @@ func (h *Handler) CreateProject(c *gin.Context) (*api_format.JSONRespFormat, *AE
 		return nil, AErr.WrapRPCError(err)
 	}
 	log.Printf("project info is %v", res.ProjectInfo)
-	return api_format.SimpleOKResp(res.ProjectInfo), nil
+	pro := &model.ProjectDetail{
+		Id:                  (*res.ProjectInfo).Id,
+		ProjectName:         (*res.ProjectInfo).ProjectName,
+		UserId:              (*res.ProjectInfo).UserId,
+		Tags:                (*res.ProjectInfo).Tags,
+		License:             (*res.ProjectInfo).License,
+		Updatetime:          (*res.ProjectInfo).Updatetime,
+		ProjectDescription:  (*res.ProjectInfo).ProjectDescription,
+		CodeAddr:            (*res.ProjectInfo).CodeAddr,
+		BinaryAddr:          (*res.ProjectInfo).BinaryAddr,
+		OperatingSystem:     model.GetOSName((*res.ProjectInfo).Classifiers),
+		ProgrammingLanguage: model.GetPLName((*res.ProjectInfo).Classifiers),
+		NaturalLanguage:     model.GetNLName((*res.ProjectInfo).Classifiers),
+		Topic:               model.GetToName((*res.ProjectInfo).Classifiers),
+	}
+	return api_format.SimpleOKResp(pro), nil
 }
 
+func (h *Handler)GetAllProjects(c *gin.Context)(*api_format.JSONRespFormat, *AErr.APIErr){
+	page, _ := strconv.ParseUint(c.DefaultQuery("page", "1"), 10, 32)
+	limit, _ := strconv.ParseUint(c.DefaultQuery("limit", "10"), 10, 32)
+
+	stream, err := rpc_cli.MSLocalCli.GetUserProjects(c,&pb_gen.GetUserProjectsRequest{
+		Uid:   1,
+		Page:  uint32(page),
+		Limit: uint32(limit),
+	})
+	if err != nil {
+		return nil, AErr.WrapRPCError(err)
+	}
+	var pros []model.ProjectDetail
+	for {
+		res, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Printf("receive failed, err=[%v]", err)
+			return nil, AErr.WrapRPCError(err)
+		}
+		log.Printf("Search info=[%v]", res.ProjectInfo)
+		pro := &model.ProjectDetail{
+			Id:                  (*res.ProjectInfo).Id,
+			ProjectName:         (*res.ProjectInfo).ProjectName,
+			UserId:              (*res.ProjectInfo).UserId,
+			Tags:                (*res.ProjectInfo).Tags,
+			License:             (*res.ProjectInfo).License,
+			Updatetime:          (*res.ProjectInfo).Updatetime,
+			ProjectDescription:  (*res.ProjectInfo).ProjectDescription,
+			CodeAddr:            (*res.ProjectInfo).CodeAddr,
+			BinaryAddr:          (*res.ProjectInfo).BinaryAddr,
+			OperatingSystem:     model.GetOSName((*res.ProjectInfo).Classifiers),
+			ProgrammingLanguage: model.GetPLName((*res.ProjectInfo).Classifiers),
+			NaturalLanguage:     model.GetNLName((*res.ProjectInfo).Classifiers),
+			Topic:               model.GetToName((*res.ProjectInfo).Classifiers),
+		}
+
+		pros = append(pros,*pro)
+	}
+	log.Printf("get user's files success")
+	return api_format.SimpleOKResp(pros), nil
+
+}
 func (h *Handler) GetProject(c *gin.Context) (*api_format.JSONRespFormat, *AErr.APIErr) {
 	pid, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
@@ -122,12 +182,28 @@ func (h *Handler) GetProject(c *gin.Context) (*api_format.JSONRespFormat, *AErr.
 		return nil, AErr.WrapRPCError(err)
 	}
 	log.Printf("project info is:%v", res)
-	return api_format.SimpleOKResp(res), nil
+	pro := &model.ProjectDetail{
+		Id:                  (*res.ProjectInfo).Id,
+		ProjectName:         (*res.ProjectInfo).ProjectName,
+		UserId:              (*res.ProjectInfo).UserId,
+		Tags:                (*res.ProjectInfo).Tags,
+		License:             (*res.ProjectInfo).License,
+		Updatetime:          (*res.ProjectInfo).Updatetime,
+		ProjectDescription:  (*res.ProjectInfo).ProjectDescription,
+		CodeAddr:            (*res.ProjectInfo).CodeAddr,
+		BinaryAddr:          (*res.ProjectInfo).BinaryAddr,
+		OperatingSystem:     model.GetOSName((*res.ProjectInfo).Classifiers),
+		ProgrammingLanguage: model.GetPLName((*res.ProjectInfo).Classifiers),
+		NaturalLanguage:     model.GetNLName((*res.ProjectInfo).Classifiers),
+		Topic:               model.GetToName((*res.ProjectInfo).Classifiers),
+	}
+	return api_format.SimpleOKResp(pro), nil
 }
+
 
 func (h *Handler) SearchProjects(c *gin.Context) (*api_format.JSONRespFormat, *AErr.APIErr) {
 	page, _ := strconv.ParseUint(c.DefaultQuery("page", "1"), 10, 32)
-	limit, _ := strconv.ParseUint(c.DefaultQuery("limit", "50"), 10, 32)
+	limit, _ := strconv.ParseUint(c.DefaultQuery("limit", "10"), 10, 32)
 	keyword := c.DefaultQuery("keyword", "")
 	operatingSystem := c.DefaultQuery("operatingSystem", pb_gen.OperatingSystem_name[0])
 	programmingLanguage := c.DefaultQuery("programmingLanguage", pb_gen.ProgrammingLanguage_name[0])
@@ -148,7 +224,7 @@ func (h *Handler) SearchProjects(c *gin.Context) (*api_format.JSONRespFormat, *A
 		log.Println("cann't start search, err=[%v]", err)
 		return nil, AErr.WrapRPCError(err)
 	}
-	var pros []pb_gen.Project
+	var pros []model.ProjectDetail
 	for {
 		res, err := stream.Recv()
 		if err == io.EOF {
@@ -158,8 +234,23 @@ func (h *Handler) SearchProjects(c *gin.Context) (*api_format.JSONRespFormat, *A
 			log.Printf("receive failed, err=[%v]", err)
 			return nil, AErr.WrapRPCError(err)
 		}
+		pro := &model.ProjectDetail{
+			Id:                  (*res.ProjectInfo).Id,
+			ProjectName:         (*res.ProjectInfo).ProjectName,
+			UserId:              (*res.ProjectInfo).UserId,
+			Tags:                (*res.ProjectInfo).Tags,
+			License:             (*res.ProjectInfo).License,
+			Updatetime:          (*res.ProjectInfo).Updatetime,
+			ProjectDescription:  (*res.ProjectInfo).ProjectDescription,
+			CodeAddr:            (*res.ProjectInfo).CodeAddr,
+			BinaryAddr:          (*res.ProjectInfo).BinaryAddr,
+			OperatingSystem:     model.GetOSName((*res.ProjectInfo).Classifiers),
+			ProgrammingLanguage: model.GetPLName((*res.ProjectInfo).Classifiers),
+			NaturalLanguage:     model.GetNLName((*res.ProjectInfo).Classifiers),
+			Topic:               model.GetToName((*res.ProjectInfo).Classifiers),
+		}
 		log.Printf("Search info=[%v]", res.ProjectInfo)
-		pros = append(pros, *res.ProjectInfo)
+		pros = append(pros, *pro)
 	}
 	return api_format.SimpleOKResp(pros), nil
 }
@@ -177,7 +268,7 @@ func (h *Handler) GetCodes(c *gin.Context) (*api_format.JSONRespFormat, *AErr.AP
 	}
 	if pb_gen.FileType(dtype) == pb_gen.FileType_code_dir {
 		page, _ := strconv.ParseUint(c.DefaultQuery("page", "1"), 10, 32)
-		limit, _ := strconv.ParseUint(c.DefaultQuery("limit", "50"), 10, 32)
+		limit, _ := strconv.ParseUint(c.DefaultQuery("limit", "10"), 10, 32)
 
 		req := &pb_gen.GetCodesRequest{
 			Pid:   pid,

@@ -43,6 +43,7 @@ func Register(r *gin.Engine) {
 	//ms_local
 	localProjectRouter := rg.Group(prefixLocalProject)
 	localProjectAPI := LocalProjectAPI{}
+	localProjectRouter.GET("/index", api_format.Wrap(localProjectAPI.GetAllProjects()))
 	localProjectRouter.POST("create", api_format.Wrap(localProjectAPI.CreateProject()))
 	localProjectRouter.GET("/:id", api_format.Wrap(localProjectAPI.GetProject()))
 	localProjectRouter.POST("/:id/upload", api_format.Wrap(localProjectAPI.Upload()))
@@ -131,6 +132,12 @@ func (projectAPI) delete() api_format.JSONHandler {
 }
 
 type LocalProjectAPI struct{}
+
+func (LocalProjectAPI) GetAllProjects() api_format.JSONHandler {
+	return func(ctx *gin.Context) (*api_format.JSONRespFormat, *err.APIErr) {
+		return ms_local.GetHnadler().GetAllProjects(ctx)
+	}
+}
 
 func (LocalProjectAPI) CreateProject() api_format.JSONHandler {
 	return func(ctx *gin.Context) (*api_format.JSONRespFormat, *err.APIErr) {
